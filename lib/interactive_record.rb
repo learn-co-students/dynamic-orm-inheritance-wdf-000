@@ -10,7 +10,7 @@ class InteractiveRecord
   def self.column_names
     DB[:conn].results_as_hash = true
 
-    sql = "pragma table_info('#{table_name}')"
+    sql = "pragma table_info('#{table_name}')"   #gets the column names of db
 
     table_info = DB[:conn].execute(sql)
     column_names = []
@@ -20,12 +20,12 @@ class InteractiveRecord
     column_names.compact
   end
 
-  self.column_names.each do |col_name|
+  self.column_names.each do |col_name|   #turns column names into methods
     attr_accessor col_name.to_sym
   end
 
   def initialize(options={})
-    options.each do |property, value|
+    options.each do |property, value|      #inserts the values with matching methods
       self.send("#{property}=", value)
     end
   end
@@ -36,7 +36,7 @@ class InteractiveRecord
     @id = DB[:conn].execute("SELECT last_insert_rowid() FROM #{table_name_for_insert}")[0][0]
   end
 
-  def table_name_for_insert
+  def table_name_for_insert   #gets the table name of the specific object
     self.class.table_name
   end
 
@@ -52,7 +52,7 @@ class InteractiveRecord
     self.class.column_names.delete_if {|col| col == "id"}.join(", ")
   end
 
-  def self.find_by_name(name)
+  def self.find_by_name(name)   
     sql = "SELECT * FROM #{self.table_name} WHERE name = '#{name}'"
     DB[:conn].execute(sql)
   end
